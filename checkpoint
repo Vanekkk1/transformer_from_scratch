@@ -1,0 +1,2 @@
+model_checkpoint_path: "eng_esp_weights"
+all_model_checkpoint_paths: "eng_esp_weights"
