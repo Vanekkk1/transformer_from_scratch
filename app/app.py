@@ -9,6 +9,7 @@ st.sidebar.title("Model Limitations")
 st.sidebar.write("""
 This model understands only 1000 words. In some cases, you might see [UNK] instead of actual words 
 if they are not in the model's vocabulary.
+It supports only up to 50 words in a sentence.
 """)
 
 # Main page title
