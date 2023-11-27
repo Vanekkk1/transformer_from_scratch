@@ -1,17 +1,30 @@
 import streamlit as st
-from model_utils import load_model, beam_search_tf
+from model_utils import load_model, translate
 
 # Load your model
 model = load_model('eng_esp_model.keras')
 
-st.title('Transformer architecture implementation with TensorFlow')
+# Sidebar for model limitations
+st.sidebar.title("Model Limitations")
+st.sidebar.write("""
+This model understands only 1000 words. In some cases, you might see [UNK] instead of actual words 
+if they are not in the model's vocabulary.
+""")
 
-# Input from the user
-user_input = st.text_input("English text goes here:")
+# Main page title
+st.title('ENG-ESP Translation with Transformer Model')
 
+# User input for translation
+user_input = st.text_input("Enter English text to translate:")
+
+# Display translation in a text area instead of plain page
 if st.button('Translate'):
-    result = beam_search_tf(model, user_input)
-    st.write('Translation:', result)
+    result = translate(model, user_input)
+    st.text_area('Spanish Translation:', result, height=50)
+
+# GitHub link
+st.markdown("Built by [Vanekkk1](https://github.com/Vanekkk1)")
+
 
 # Dropdown for source code
 st.title("Source codes for implementation and inference")
@@ -184,46 +197,25 @@ model.fit(
     validation_data=((X_valid, X_valid_dec), y_valid),
     callbacks=[early_st],
 )
-    """)
+model.summary()
+
+# %%
+model.save("eng_esp_model.keras")
+model.save_weights("eng_esp_weights")
+""")
 
 with st.expander("Inference Source Code"):
     st.code("""
-def beam_search_tf(model, sentence_en, beam_width=3):
-    sentence_en = tf.constant([sentence_en])
-    start_seq = tf.constant(["startofseq"])
-
-    vocab = text_vectorization_spain.get_vocabulary()  # Call this once outside the loop
-    vocab_size = len(vocab)
-
-    # Initial prediction
-    y_proba = model.predict([sentence_en, start_seq])[0, 0]
-    top_k = tf.math.top_k(y_proba, k=beam_width)
-
-    top_translations = [
-        (tf.math.log(word_proba), vocab[word_id])
-        for word_proba, word_id in zip(top_k.values.numpy(), top_k.indices.numpy())
-    ]
-
-    for idx in range(1, MAX_LENGTH):
-        candidates = []
-        # Prepare batch inputs for all candidates
-        batch_sentence_en = tf.constant([sentence_en.numpy()[0]] * beam_width)
-        batch_start_seq = tf.constant([f"startofseq {tr[1]}" for tr in top_translations])
-
-        # Batch prediction
-        y_proba_batch = model.predict([batch_sentence_en, batch_start_seq])
-
-        for i, (log_proba, translation) in enumerate(top_translations):
-            y_proba = y_proba_batch[i, idx]
-            for word_id in range(vocab_size):
-                word = vocab[word_id]
-                new_log_proba = log_proba + tf.math.log(y_proba[word_id])
-                candidates.append((new_log_proba, f"{translation} {word}"))
-
-        top_translations = sorted(candidates, reverse=True)[:beam_width]
-
-        if all([tr.endswith("endofseq") for _, tr in top_translations]):
-            return top_translations[0][1].replace("endofseq", "").strip()
-
-    return top_translations[0][1].replace("endofseq", "").strip()
+    def translate(model, sentence_en):
+        translation = ""
+        for word_idx in range(MAX_LENGTH):
+            X = np.array([sentence_en])  # encoder input
+            X_dec = np.array(["startofseq " + translation])  # decoder input
+            y_proba = model.predict((X, X_dec))[0, word_idx]  # last token's probas
+            predicted_word_id = np.argmax(y_proba)
+            predicted_word = text_vectorization_spain.get_vocabulary()[predicted_word_id]
+            if predicted_word == "endofseq":
+                break
+            translation += " " + predicted_word
+        return translation.strip()
 """)

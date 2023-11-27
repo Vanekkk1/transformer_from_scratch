@@ -169,5 +169,4 @@ model.summary()
 
 # %%
 model.save("eng_esp_model.keras")
-
-
+model.save_weights("eng_esp_weights")

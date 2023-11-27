@@ -2,6 +2,7 @@
 import tensorflow as tf
 import numpy as np
 
+@tf.keras.saving.register_keras_serializable()
 class PositionalEncoding(tf.keras.layers.Layer):
     def __init__(self, max_length, embed_size, dtype=tf.float32, **kwargs):
         super().__init__(dtype=dtype, **kwargs)
@@ -68,3 +69,16 @@ def beam_search_tf(model, sentence_en, beam_width=3):
             return top_translations[0][1].replace("endofseq", "").strip()
 
     return top_translations[0][1].replace("endofseq", "").strip()
+
+def translate(model, sentence_en):
+    translation = ""
+    for word_idx in range(MAX_LENGTH):
+        X = np.array([sentence_en])  # encoder input
+        X_dec = np.array(["startofseq " + translation])  # decoder input
+        y_proba = model.predict((X, X_dec))[0, word_idx]  # last token's probas
+        predicted_word_id = np.argmax(y_proba)
+        predicted_word = text_vectorization_spain.get_vocabulary()[predicted_word_id]
+        if predicted_word == "endofseq":
+            break
+        translation += " " + predicted_word
+    return translation.strip()
