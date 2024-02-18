@@ -1,25 +1,26 @@
-English-Spanish Translation Model
-This project is about building a machine-learning model for translating English text to Spanish using TensorFlow and Keras, with the Streamlit app.
+# English-Spanish Translation Model
 
-Usage
-The model is located in app/model.py
-different helpers for the model and the app itself in app/model_utils.py
-Streamlit integration in app/app.py
+This project focuses on building a machine learning model capable of translating English text into Spanish. It utilizes TensorFlow and Keras for model development and incorporates Streamlit for web application integration.
 
-The vectorization.py script is used for text vectorization(tokenization)
+## Usage
 
-The trained model os saved at eng_esp_model.keras
+- **Model Script:** The main model is located in `app/model.py`.
+- **Model and App Utilities:** Various helpers for both the model and the app can be found in `app/model_utils.py`.
+- **Streamlit Integration:** The Streamlit app is defined in `app/app.py`.
+- **Text Vectorization:** The script `vectorization.py` is utilized for text vectorization (tokenization).
+- **Trained Model:** The trained model is saved as `eng_esp_model.keras`.
+- **Model Testing:** The notebook `eng_spanish_translation.ipynb` is used for testing the model.
 
-The eng_spanish_translation.ipynb notebook is used for testing the model.
+## Contributing
 
-Contributing
-Contributions are welcome. Please submit a pull request.
+Contributions to this project are highly encouraged! If you would like to contribute, please submit a pull request.
 
-License
-This project is licensed under the MIT License.
+## License
 
+This project is licensed under the MIT License, allowing for wide use and distribution.
 
-Deployed here (it might not work, because I got a free tear on Streamlit):
+## Deployment
 
-https://transformermodel.streamlit.app
+The model is deployed at the following URL: [https://transformermodel.streamlit.app](https://transformermodel.streamlit.app)
 
+*Note: The deployment might not be operational due to limitations of the free tier on Streamlit.*
